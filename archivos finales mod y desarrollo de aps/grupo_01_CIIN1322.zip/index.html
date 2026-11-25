@@ -1,0 +1,2053 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>SIGA · AgroVerde — Sistema Integrado de Gestión AgroVerde</title>
+  <!-- Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- Google Fonts: Inter & Plus Jakarta Sans -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=Plus+Jakarta+Sans:wght@600;700;800&display=swap" rel="stylesheet" />
+
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['Inter', 'system-ui', 'sans-serif'],
+            display: ['Plus Jakarta Sans', 'Inter', 'sans-serif'],
+          },
+          colors: {
+            forest: {
+              950: '#081d13',
+              900: '#0d2b1d',
+              850: '#123826',
+              800: '#174730',
+              700: '#1e5c3f',
+            },
+            limeagro: {
+              400: '#c3f550',
+              500: '#b3eb38',
+            },
+            mintagro: {
+              300: '#95e88a',
+              200: '#b4f2ab',
+              100: '#c6f7be',
+            },
+            btnbright: {
+              500: '#2cd45b',
+              600: '#24ba4e',
+            }
+          }
+        }
+      }
+    };
+  </script>
+
+  <style>
+    body {
+      font-family: 'Inter', system-ui, sans-serif;
+      margin: 0;
+      padding: 0;
+      overflow-x: hidden;
+    }
+
+    /* Fondo degradado verde claro para Vistas 2 (Login) y 4 (Registrar Lote) */
+    .bg-agro-light-gradient {
+      background: linear-gradient(135deg, #95e88a 0%, #b7f3ae 50%, #c6f7be 100%);
+    }
+
+    /* Fondo verde bosque oscuro para Vistas 1, 3, 5 y 6 */
+    .bg-agro-forest {
+      background-color: #0d2b1d;
+    }
+
+    /* Título estilo SIGA Login con sombra verde desplazada */
+    .siga-wordmark {
+      font-family: 'Plus Jakarta Sans', 'Inter', sans-serif;
+      font-weight: 900;
+      font-style: italic;
+      letter-spacing: -0.04em;
+      color: #0d261a;
+      text-shadow: 4px 4px 0px #52c977;
+    }
+
+    /* Sombra suave elevada para tarjetas blancas */
+    .card-elevated {
+      box-shadow: 0 20px 45px -12px rgba(5, 22, 14, 0.35);
+    }
+
+    .card-soft {
+      box-shadow: 0 12px 30px -8px rgba(13, 43, 29, 0.14);
+    }
+
+    /* Transición suave entre vistas */
+    .view-section {
+      animation: fadeInView 0.22s ease-out;
+    }
+
+    @keyframes fadeInView {
+      from {
+        opacity: 0;
+        transform: translateY(6px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    /* Ocultar scrollbar en barra rápida móvil */
+    .no-scrollbar::-webkit-scrollbar {
+      display: none;
+    }
+    .no-scrollbar {
+      -ms-overflow-style: none;
+      scrollbar-width: none;
+    }
+  </style>
+</head>
+<body class="bg-forest-900 text-slate-900 antialiased selection:bg-limeagro-400 selection:text-forest-900">
+
+  <!-- Contenedor Raíz de la Aplicación -->
+  <div id="app" class="min-h-screen flex flex-col justify-between pb-16">
+    <!-- El contenido activo de la vista se renderiza aquí -->
+    <main id="view-container" class="flex-1 flex flex-col"></main>
+
+    <!-- Barra inferior fija de navegación entre las 6 pantallas del prototipo (para demostración y recorrido completo) -->
+    <nav aria-label="Navegación de prototipo SIGA" class="fixed bottom-3 left-1/2 -translate-x-1/2 z-40 max-w-[96vw]">
+      <div class="bg-forest-950/95 backdrop-blur-md border border-emerald-700/50 rounded-full px-2.5 py-1.5 shadow-2xl flex items-center gap-1 overflow-x-auto no-scrollbar">
+        <span class="hidden md:inline-flex items-center gap-1.5 text-[11px] font-semibold uppercase tracking-wider text-emerald-300/80 pl-2.5 pr-1.5 whitespace-nowrap">
+          <span class="w-2 h-2 rounded-full bg-limeagro-400 animate-pulse"></span>
+          Vistas A.5:
+        </span>
+        <button onclick="navigateTo('landing')" data-nav="landing" class="nav-pill px-3 py-1.5 rounded-full text-xs font-semibold whitespace-nowrap transition-all">
+          1. Inicio
+        </button>
+        <button onclick="navigateTo('login')" data-nav="login" class="nav-pill px-3 py-1.5 rounded-full text-xs font-semibold whitespace-nowrap transition-all">
+          2. Login
+        </button>
+        <button onclick="navigateTo('dashboard')" data-nav="dashboard" class="nav-pill px-3 py-1.5 rounded-full text-xs font-semibold whitespace-nowrap transition-all">
+          3. Resumen
+        </button>
+        <button onclick="navigateTo('register')" data-nav="register" class="nav-pill px-3 py-1.5 rounded-full text-xs font-semibold whitespace-nowrap transition-all">
+          4. Nuevo Lote
+        </button>
+        <button onclick="navigateTo('quality')" data-nav="quality" class="nav-pill px-3 py-1.5 rounded-full text-xs font-semibold whitespace-nowrap transition-all">
+          5. Calidad
+        </button>
+        <button onclick="navigateTo('traceability')" data-nav="traceability" class="nav-pill px-3 py-1.5 rounded-full text-xs font-semibold whitespace-nowrap transition-all">
+          6. Trazabilidad
+        </button>
+      </div>
+    </nav>
+  </div>
+
+  <!-- Toast / Notificación No Intrusiva (Reemplaza alert()) -->
+  <div id="toast-container" class="fixed top-5 right-5 z-50 flex flex-col gap-2 pointer-events-none max-w-sm w-full px-4 sm:px-0"></div>
+
+  <!-- Modal Informativo (Restablecimiento RBAC / Detalles Offline) -->
+  <div id="modal-backdrop" class="fixed inset-0 bg-black/60 backdrop-blur-xs z-50 hidden items-center justify-center p-4" onclick="closeModal(event)">
+    <div id="modal-card" class="bg-white rounded-3xl max-w-md w-full p-6 sm:p-7 shadow-2xl border border-emerald-100 transform transition-all" onclick="event.stopPropagation()">
+      <div class="flex items-start justify-between gap-3 mb-4">
+        <div class="flex items-center gap-3">
+          <div id="modal-icon-box" class="w-10 h-10 rounded-2xl bg-emerald-100 text-emerald-700 flex items-center justify-center shrink-0">
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
+            </svg>
+          </div>
+          <div>
+            <p class="text-[11px] font-bold uppercase tracking-wider text-emerald-700" id="modal-tag">SEGURIDAD Y CONTROL RBAC</p>
+            <h3 class="text-lg font-extrabold text-slate-900" id="modal-title">Recuperación de Credenciales</h3>
+          </div>
+        </div>
+        <button onclick="hideModal()" class="p-1.5 rounded-xl text-slate-400 hover:text-slate-700 hover:bg-slate-100 transition">
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
+          </svg>
+        </button>
+      </div>
+      <div id="modal-body" class="text-sm text-slate-600 leading-relaxed space-y-2.5 mb-6"></div>
+      <div class="flex justify-end gap-2">
+        <button onclick="hideModal()" class="px-5 py-2.5 rounded-xl bg-forest-900 hover:bg-forest-800 text-white text-sm font-semibold transition">
+          Entendido
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // =========================================================================
+    // ESTADO GLOBAL Y DATOS INICIALES (SIGA · AGROVERDE S.A.C.)
+    // =========================================================================
+    const STORAGE_KEY = 'siga_agroverde_state_v1';
+
+    const DEFAULT_STATE = {
+      currentView: 'landing',
+      isOnline: true,
+      pendingSyncCount: 0,
+      lastSyncTime: '14:42',
+      dashboardUpdatedTime: '08:42',
+      currentUser: {
+        name: 'Juan Pérez',
+        initials: 'JP',
+        role: 'Supervisor',
+        inspectorInitials: 'AV'
+      },
+      selectedTraceCode: 'L-004',
+      selectedQualityCode: 'L-004',
+      qualityFormDraft: {
+        verdict: 'OBSERVADO',
+        observations: '',
+        sendToReprocess: true
+      },
+      nextCorrelative: 89, // Genera LOTE-2026-089
+      metrics: {
+        inProductionBase: 12,
+        approvedBase: 85,
+        observedBase: 2,
+        rejectedBase: 1,
+        hectares: '68.4',
+        conformity: '96.6%'
+      },
+      stock: [
+        { product: 'Espárrago Verde', chamber: 'Cámara A-03', kg: 4500, maxKg: 10000 },
+        { product: 'Palta Hass', chamber: 'Cámara B-11', kg: 8200, maxKg: 10000 }
+      ],
+      pendingOrder: {
+        code: '#PED-2026-88',
+        destination: 'EE. UU.',
+        kg: '6,400 kg',
+        product: 'Espárrago Verde',
+        departure: 'Salida 02 Oct',
+        status: 'En preparación'
+      },
+      lots: [
+        {
+          code: 'L-004',
+          regCode: 'REG · 2026-004-PE',
+          product: 'Espárrago',
+          productFull: 'Espárrago Verde',
+          kg: 600,
+          destination: 'EE. UU.',
+          origin: 'Fundo El Sol',
+          originLocation: 'Fundo El Sol · Ica',
+          line: 'Línea 1',
+          receptionDate: '29 sep 2026',
+          receptionDateInput: '29/09/2026',
+          receptionTime: '08:00 AM',
+          productionTime: '10:30 AM',
+          coldChain: '3.2 °C · Estable',
+          chamber: 'Cámara de Frío B-12',
+          qualityStatus: 'APROBADO', // APROBADO | OBSERVADO | RECHAZADO | PENDIENTE
+          qualityScore: '100%',
+          qualityLabel: 'Calidad Aprobada (100%)',
+          reprocess: false,
+          observations: 'Calibre uniforme, frescura óptima y temperatura controlada.',
+          stagesCompleted: 4,
+          dispatchStatus: 'Pendiente de carga a contenedor',
+          dispatchBadge: 'PENDIENTE',
+          synced: true
+        },
+        {
+          code: 'LOTE-2026-088',
+          regCode: 'REG · 2026-088-PE',
+          product: 'Palta',
+          productFull: 'Palta Hass',
+          kg: 1250,
+          destination: 'Europa',
+          origin: 'Fundo Santa Rosa',
+          originLocation: 'Fundo Santa Rosa · La Libertad',
+          line: 'Línea 2',
+          receptionDate: '28 sep 2026',
+          receptionDateInput: '28/09/2026',
+          receptionTime: '07:30 AM',
+          productionTime: '11:15 AM',
+          coldChain: '4.1 °C · Estable',
+          chamber: 'Cámara de Frío B-11',
+          qualityStatus: 'OBSERVADO',
+          qualityScore: '84%',
+          qualityLabel: 'Observado · En Reproceso',
+          reprocess: true,
+          observations: 'Variación leve en porcentaje de materia seca; enviado a reclasificación.',
+          stagesCompleted: 3,
+          dispatchStatus: 'Bloqueado hasta nueva evaluación',
+          dispatchBadge: 'BLOQUEADO',
+          synced: true
+        },
+        {
+          code: 'LOTE-2026-087',
+          regCode: 'REG · 2026-087-PE',
+          product: 'Arándano',
+          productFull: 'Arándano',
+          kg: 480,
+          destination: 'EE. UU.',
+          origin: 'Agropecuaria Valle Verde',
+          originLocation: 'Valle Verde · La Libertad',
+          line: 'Línea 3',
+          receptionDate: '27 sep 2026',
+          receptionDateInput: '27/09/2026',
+          receptionTime: '09:10 AM',
+          productionTime: '12:40 PM',
+          coldChain: '2.8 °C · Estable',
+          chamber: 'Cámara de Frío A-01',
+          qualityStatus: 'APROBADO',
+          qualityScore: '100%',
+          qualityLabel: 'Calidad Aprobada (100%)',
+          reprocess: false,
+          observations: 'Cumple firmeza y grados Brix exigidos para exportación.',
+          stagesCompleted: 4,
+          dispatchStatus: 'Pendiente de carga a contenedor',
+          dispatchBadge: 'PENDIENTE',
+          synced: true
+        }
+      ]
+    };
+
+    let state = loadState();
+
+    function loadState() {
+      try {
+        const raw = localStorage.getItem(STORAGE_KEY);
+        if (!raw) return JSON.parse(JSON.stringify(DEFAULT_STATE));
+        const parsed = JSON.parse(raw);
+        return {
+          ...JSON.parse(JSON.stringify(DEFAULT_STATE)),
+          ...parsed,
+          lots: Array.isArray(parsed.lots) && parsed.lots.length ? parsed.lots : JSON.parse(JSON.stringify(DEFAULT_STATE.lots))
+        };
+      } catch (e) {
+        return JSON.parse(JSON.stringify(DEFAULT_STATE));
+      }
+    }
+
+    function saveState() {
+      try {
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+      } catch (e) {
+        // Fallback silencioso si el almacenamiento está restringido
+      }
+    }
+
+    // =========================================================================
+    // UTILIDADES VISUALES (SVG QR DETERMINISTA, ICONOS, TOASTS Y MODALES)
+    // =========================================================================
+    function generateDeterministicQR(text, size = 84) {
+      const grid = 11;
+      let hash = 2166136261;
+      for (let i = 0; i < text.length; i++) {
+        hash ^= text.charCodeAt(i);
+        hash = Math.imul(hash, 16777619);
+      }
+
+      const cell = size / grid;
+      let rects = '';
+
+      // Patrones de posición (esquinas QR)
+      const isFinder = (r, c) => {
+        if (r < 3 && c < 3) return true;
+        if (r < 3 && c >= grid - 3) return true;
+        if (r >= grid - 3 && c < 3) return true;
+        return false;
+      };
+
+      const isFinderHole = (r, c) => {
+        return (r === 1 && c === 1) || (r === 1 && c === grid - 2) || (r === grid - 2 && c === 1);
+      };
+
+      for (let r = 0; r < grid; r++) {
+        for (let c = 0; c < grid; c++) {
+          let filled = false;
+          if (isFinder(r, c)) {
+            filled = !isFinderHole(r, c);
+          } else {
+            const bit = ((hash >>> ((r * grid + c) % 24)) ^ (r * 7 + c * 13)) & 1;
+            filled = bit === 1;
+          }
+          if (filled) {
+            rects += `<rect x="${(c * cell).toFixed(2)}" y="${(r * cell).toFixed(2)}" width="${(cell + 0.15).toFixed(2)}" height="${(cell + 0.15).toFixed(2)}" fill="#111827" rx="0.6" />`;
+          }
+        }
+      }
+
+      return `
+        <svg width="${size}" height="${size}" viewBox="0 0 ${size} ${size}" class="block mx-auto" role="img" aria-label="Código QR ${text}">
+          <rect width="${size}" height="${size}" fill="#ffffff" rx="4" />
+          ${rects}
+        </svg>
+      `;
+    }
+
+    function showToast(title, message, type = 'success') {
+      const container = document.getElementById('toast-container');
+      const id = 'toast-' + Date.now();
+      const colors = {
+        success: 'bg-white border-emerald-300 text-slate-900',
+        warning: 'bg-amber-50 border-amber-300 text-amber-950',
+        danger: 'bg-rose-50 border-rose-300 text-rose-950',
+        info: 'bg-forest-900 border-emerald-600 text-white'
+      };
+      const dotColors = {
+        success: 'bg-emerald-500',
+        warning: 'bg-amber-500',
+        danger: 'bg-rose-500',
+        info: 'bg-limeagro-400'
+      };
+
+      const toast = document.createElement('div');
+      toast.id = id;
+      toast.className = `pointer-events-auto rounded-2xl border px-4 py-3 shadow-xl flex items-start gap-3 transition-all duration-300 ${colors[type] || colors.success}`;
+      toast.innerHTML = `
+        <span class="w-2.5 h-2.5 rounded-full mt-1.5 shrink-0 ${dotColors[type] || dotColors.success}"></span>
+        <div class="flex-1 text-xs">
+          <p class="font-bold text-sm leading-tight">${title}</p>
+          <p class="opacity-85 mt-0.5 leading-snug">${message}</p>
+        </div>
+      `;
+      container.appendChild(toast);
+
+      setTimeout(() => {
+        toast.style.opacity = '0';
+        toast.style.transform = 'translateY(-6px)';
+        setTimeout(() => toast.remove(), 260);
+      }, 3400);
+    }
+
+    function openModal(tag, title, bodyHtml) {
+      document.getElementById('modal-tag').textContent = tag;
+      document.getElementById('modal-title').textContent = title;
+      document.getElementById('modal-body').innerHTML = bodyHtml;
+      const backdrop = document.getElementById('modal-backdrop');
+      backdrop.classList.remove('hidden');
+      backdrop.classList.add('flex');
+    }
+
+    function hideModal() {
+      const backdrop = document.getElementById('modal-backdrop');
+      backdrop.classList.add('hidden');
+      backdrop.classList.remove('flex');
+    }
+
+    function closeModal(e) {
+      if (e.target.id === 'modal-backdrop') hideModal();
+    }
+
+    // =========================================================================
+    // SIMULACIÓN DE CONECTIVIDAD EN PLANTA (ONLINE / OFFLINE + CACHÉ LOCAL)
+    // =========================================================================
+    function toggleConnectivity() {
+      state.isOnline = !state.isOnline;
+      if (state.isOnline) {
+        const syncedNow = state.pendingSyncCount;
+        state.lots.forEach(l => l.synced = true);
+        state.pendingSyncCount = 0;
+        const now = new Date();
+        state.lastSyncTime = `${String(now.getHours()).padStart(2, '0')}:${String(now.getMinutes()).padStart(2, '0')}`;
+        showToast(
+          'Conexión restablecida en planta',
+          syncedNow > 0
+            ? `Se sincronizaron ${syncedNow} registro(s) desde la caché local sin duplicados (RNF-02).`
+            : 'Todos los módulos sincronizados con el servidor central SIGA.',
+          'success'
+        );
+      } else {
+        showToast(
+          'Modo Offline activado (Planta)',
+          'Conectividad interrumpida. Los nuevos registros se guardarán en caché local (SQLite/LocalStorage).',
+          'warning'
+        );
+      }
+      saveState();
+      renderCurrentView();
+    }
+
+    function renderSystemStatusPill(variant = 'dark') {
+      if (state.isOnline) {
+        return `
+          <button onclick="toggleConnectivity()" title="Clic para simular corte de red en planta (RNF-02)"
+            class="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full text-xs font-semibold transition cursor-pointer ${
+              variant === 'dark'
+                ? 'bg-[#123c28] hover:bg-[#174d33] text-emerald-200 border border-emerald-600/40'
+                : 'bg-emerald-100 hover:bg-emerald-200 text-emerald-900 border border-emerald-300'
+            }">
+            <span class="w-2 h-2 rounded-full bg-[#2cd45b]"></span>
+            <span>Sistema operativo</span>
+          </button>
+        `;
+      } else {
+        return `
+          <button onclick="toggleConnectivity()" title="Clic para restablecer red y sincronizar caché local"
+            class="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full text-xs font-semibold bg-amber-500/20 hover:bg-amber-500/30 text-amber-200 border border-amber-400/50 transition cursor-pointer">
+            <span class="w-2 h-2 rounded-full bg-amber-400 animate-ping"></span>
+            <span>Modo Offline · Caché (${state.pendingSyncCount})</span>
+          </button>
+        `;
+      }
+    }
+
+    // =========================================================================
+    // NAVEGACIÓN ENTRE LAS 6 PANTALLAS
+    // =========================================================================
+    function navigateTo(viewName, extra = {}) {
+      if (extra.lotCode) {
+        state.selectedTraceCode = extra.lotCode;
+        state.selectedQualityCode = extra.lotCode;
+      }
+      state.currentView = viewName;
+      saveState();
+      renderCurrentView();
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    function updateNavPills() {
+      document.querySelectorAll('.nav-pill').forEach(btn => {
+        const target = btn.getAttribute('data-nav');
+        if (target === state.currentView) {
+          btn.className = 'nav-pill px-3 py-1.5 rounded-full text-xs font-bold whitespace-nowrap transition-all bg-limeagro-400 text-forest-900 shadow-sm';
+        } else {
+          btn.className = 'nav-pill px-3 py-1.5 rounded-full text-xs font-semibold whitespace-nowrap transition-all text-emerald-100/80 hover:text-white hover:bg-forest-800';
+        }
+      });
+    }
+
+    // =========================================================================
+    // VISTA 1: PÁGINA DE INICIO / LANDING
+    // =========================================================================
+    function renderLandingView() {
+      const heroLot = state.lots.find(l => l.code === 'L-004') || state.lots[0];
+      return `
+        <div class="view-section min-h-screen bg-agro-forest text-white flex flex-col justify-between relative overflow-hidden">
+          <!-- Barra superior -->
+          <header class="w-full max-w-6xl mx-auto px-6 sm:px-10 pt-7 pb-4 flex items-center justify-between relative z-10">
+            <a href="#inicio" onclick="event.preventDefault(); navigateTo('landing')" class="inline-flex items-center gap-2.5 group">
+              <span class="w-6 h-6 rounded-full bg-limeagro-400/20 flex items-center justify-center">
+                <svg class="w-4 h-4 text-limeagro-400" viewBox="0 0 24 24" fill="currentColor">
+                  <path d="M17 8C8 10 5.9 16.17 3.82 21.34l1.89.66l.95-2.3c.48.17.98.3 1.34.3C19 20 22 3 22 3c-1 2-8 2.25-13 3.25S2 11.5 2 13.5s1.75 3.75 1.75 3.75C7 8 17 8 17 8Z"/>
+                </svg>
+              </span>
+              <span class="font-display font-bold text-lg tracking-tight text-white">
+                SIGA <span class="text-limeagro-400 mx-0.5">·</span> AgroVerde
+              </span>
+            </a>
+
+            <button onclick="navigateTo('login')"
+              class="px-5 py-2 rounded-full text-sm font-medium text-white bg-white/5 hover:bg-white/15 border border-white/25 transition cursor-pointer">
+              Iniciar sesión
+            </button>
+          </header>
+
+          <!-- Hero Principal 2 Columnas -->
+          <section class="w-full max-w-6xl mx-auto px-6 sm:px-10 py-8 lg:py-12 grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-8 items-center relative z-10 my-auto">
+            <!-- Columna Izquierda -->
+            <div class="lg:col-span-6 space-y-6">
+              <h1 class="font-display font-extrabold text-4xl sm:text-5xl lg:text-[3.55rem] leading-[1.06] tracking-tight">
+                <span class="block text-white">Cada lote, <span class="text-limeagro-400">del</span></span>
+                <span class="block text-limeagro-400">campo al</span>
+                <span class="block text-limeagro-400">contenedor.</span>
+              </h1>
+
+              <p class="text-emerald-100/80 text-base sm:text-lg max-w-md leading-relaxed font-normal">
+                Recepción, producción, calidad y despacho en un solo sistema. Funciona aunque se caiga la conexión en planta.
+              </p>
+
+              <div class="pt-2 flex flex-wrap items-center gap-3.5">
+                <button onclick="navigateTo('register')"
+                  class="px-6 py-3.5 rounded-xl bg-limeagro-400 hover:bg-limeagro-500 text-forest-950 font-bold text-sm sm:text-base shadow-lg shadow-limeagro-400/20 transition cursor-pointer">
+                  Registrar lote
+                </button>
+                <button onclick="navigateTo('traceability', { lotCode: '${heroLot.code}' })"
+                  class="px-6 py-3.5 rounded-xl bg-transparent hover:bg-white/10 text-white font-semibold text-sm sm:text-base border border-emerald-500/40 transition cursor-pointer">
+                  Consultar trazabilidad
+                </button>
+              </div>
+            </div>
+
+            <!-- Columna Derecha: Ilustración Vectorial + Tarjeta Flotante Lote L-004 -->
+            <div class="lg:col-span-6 relative flex items-center justify-center min-h-[390px] sm:min-h-[430px]">
+              <!-- Círculo amarillo dorado de fondo -->
+              <div class="w-72 h-72 sm:w-80 sm:h-80 rounded-full bg-[#f3cf55] absolute top-2 right-6 sm:right-12 pointer-events-none"></div>
+
+              <!-- Tallos de espárrago verdes a la izquierda -->
+              <svg class="w-36 h-60 absolute bottom-0 left-4 sm:left-14 pointer-events-none z-10" viewBox="0 0 140 240" fill="none">
+                <rect x="24" y="65" width="14" height="175" rx="7" fill="#3a8f49" />
+                <path d="M22 68C22 54 31 44 31 44C31 44 40 54 40 68H22Z" fill="#2d743a" />
+                <path d="M23 92L31 84L39 92" stroke="#235c2e" stroke-width="2.5" stroke-linecap="round" />
+                <path d="M23 122L31 114L39 122" stroke="#235c2e" stroke-width="2.5" stroke-linecap="round" />
+
+                <rect x="48" y="42" width="16" height="198" rx="8" fill="#52b35e" />
+                <path d="M46 46C46 30 56 18 56 18C56 18 66 30 66 46H46Z" fill="#3d9348" />
+                <path d="M47 75L56 66L65 75" stroke="#2c6f35" stroke-width="2.5" stroke-linecap="round" />
+                <path d="M47 110L56 101L65 110" stroke="#2c6f35" stroke-width="2.5" stroke-linecap="round" />
+
+                <rect x="74" y="82" width="14" height="158" rx="7" fill="#469e52" />
+                <path d="M72 85C72 71 81 61 81 61C81 61 90 71 90 85H72Z" fill="#327c3d" />
+                <path d="M73 112L81 104L89 112" stroke="#255f2e" stroke-width="2.5" stroke-linecap="round" />
+              </svg>
+
+              <!-- Palta partida a la mitad abajo al centro -->
+              <svg class="w-40 h-44 absolute -bottom-3 left-1/2 -translate-x-4 pointer-events-none z-10" viewBox="0 0 160 180" fill="none">
+                <path d="M80 12C116 12 142 64 142 114C142 152 114 174 80 174C46 174 18 152 18 114C18 64 44 12 80 12Z" fill="#2c6234" />
+                <path d="M80 22C110 22 132 68 132 112C132 144 109 164 80 164C51 164 28 144 28 112C28 68 50 22 80 22Z" fill="#b7d96c" />
+                <circle cx="80" cy="116" r="27" fill="#7c4b27" />
+                <circle cx="72" cy="108" r="7" fill="#9a6238" opacity="0.6" />
+              </svg>
+
+              <!-- Arándanos morados abajo a la derecha -->
+              <svg class="w-32 h-28 absolute bottom-1 right-2 sm:right-6 pointer-events-none z-10" viewBox="0 0 130 110" fill="none">
+                <circle cx="42" cy="74" r="24" fill="#3a3985" />
+                <circle cx="42" cy="54" r="5" fill="#232259" />
+                <circle cx="84" cy="64" r="27" fill="#46459c" />
+                <circle cx="84" cy="41" r="6" fill="#262563" />
+                <circle cx="74" cy="92" r="22" fill="#2f2e70" />
+              </svg>
+
+              <!-- Tarjeta Blanca Flotante de Lote L-004 -->
+              <div onclick="navigateTo('traceability', { lotCode: 'L-004' })"
+                class="relative z-20 bg-white text-slate-900 rounded-3xl p-5 sm:p-6 w-full max-w-[355px] card-elevated cursor-pointer hover:scale-[1.015] transition-transform -mt-8 sm:ml-10">
+                <!-- Pin amarillo superior -->
+                <div class="w-4 h-4 rounded-full bg-[#e6c243] border-2 border-forest-900 mx-auto -mt-7 mb-2 shadow-sm"></div>
+
+                <div class="flex items-center justify-between gap-2">
+                  <h2 class="font-display font-extrabold text-2xl text-slate-900 tracking-tight">Lote L-004</h2>
+                  <span class="px-3 py-1 rounded-full text-xs font-bold bg-limeagro-400 text-forest-950">
+                    Espárrago
+                  </span>
+                </div>
+                <p class="text-xs font-medium text-slate-500 mt-0.5">600 kg · Destino EE. UU.</p>
+
+                <div class="mt-4 flex items-center justify-between gap-3">
+                  <!-- Lista vertical de etapas -->
+                  <ul class="space-y-2 text-xs font-semibold text-slate-700">
+                    <li class="flex items-center gap-2.5">
+                      <span class="w-2.5 h-2.5 rounded-full bg-emerald-600 shrink-0"></span>
+                      <span>Recepción</span>
+                    </li>
+                    <li class="flex items-center gap-2.5">
+                      <span class="w-2.5 h-2.5 rounded-full bg-emerald-600 shrink-0"></span>
+                      <span>Producción · Línea 1</span>
+                    </li>
+                    <li class="flex items-center gap-2.5">
+                      <span class="w-2.5 h-2.5 rounded-full bg-emerald-600 shrink-0"></span>
+                      <span>Calidad aprobada</span>
+                    </li>
+                    <li class="flex items-center gap-2.5">
+                      <span class="w-3 h-3 rounded-full bg-indigo-600 ring-2 ring-indigo-200 shrink-0"></span>
+                      <span class="text-slate-900 font-bold">Almacén</span>
+                    </li>
+                    <li class="flex items-center gap-2.5 text-slate-400">
+                      <span class="w-2.5 h-2.5 rounded-full bg-slate-300 shrink-0"></span>
+                      <span>Despacho</span>
+                    </li>
+                  </ul>
+
+                  <!-- Código QR -->
+                  <div class="p-1.5 border border-slate-200 rounded-xl bg-white shrink-0">
+                    ${generateDeterministicQR('SIGA-L-004', 76)}
+                  </div>
+                </div>
+              </div>
+
+              <!-- Insignia flotante blanca: ✓ Calidad aprobada -->
+              <div class="absolute bottom-14 left-1/2 -translate-x-16 sm:-translate-x-10 z-30 bg-white text-slate-900 px-3.5 py-2 rounded-xl shadow-lg flex items-center gap-1.5 text-xs font-bold whitespace-nowrap">
+                <span class="text-emerald-600 font-extrabold">✓</span>
+                <span>Calidad aprobada</span>
+              </div>
+
+              <!-- Insignia flotante circular azul-violeta: Trazabilidad 100 % -->
+              <div class="absolute bottom-4 right-2 sm:right-4 z-30 bg-[#4847a8] text-white px-4 py-2.5 rounded-full shadow-xl text-xs font-bold -rotate-6">
+                Trazabilidad 100 %
+              </div>
+            </div>
+          </section>
+
+          <div class="h-4"></div>
+        </div>
+      `;
+    }
+
+    // =========================================================================
+    // VISTA 2: INICIO DE SESIÓN / LOGIN
+    // =========================================================================
+    function renderLoginView() {
+      return `
+        <div class="view-section min-h-screen bg-agro-light-gradient flex items-center justify-center p-4 sm:p-8">
+          <div class="w-full max-w-2xl bg-white rounded-[2rem] border-2 border-[#36b368] p-6 sm:p-10 card-soft relative">
+            <!-- Botón discreto volver al inicio -->
+            <button onclick="navigateTo('landing')"
+              class="text-xs font-semibold text-emerald-700 hover:text-emerald-950 inline-flex items-center gap-1 mb-2 transition cursor-pointer">
+              ← Volver al inicio
+            </button>
+
+            <!-- Marca SIGA con sombra verde desplazada -->
+            <div class="text-center mb-6">
+              <h1 class="siga-wordmark text-5xl sm:text-6xl leading-none select-none">SIGA</h1>
+              <p class="text-xs sm:text-sm text-slate-600 font-medium mt-2 tracking-wide">
+                Sistema Integrado de Gestión AgroVerde
+              </p>
+            </div>
+
+            <!-- Tarjeta interior gris claro -->
+            <div class="max-w-sm mx-auto bg-[#d4d8d6] rounded-[1.75rem] p-6 sm:p-7 shadow-inner">
+              <div class="flex justify-center mb-5">
+                <span class="px-5 py-1.5 rounded-full bg-white text-slate-800 text-xs sm:text-sm font-semibold shadow-xs">
+                  Iniciar sesión
+                </span>
+              </div>
+
+              <form onsubmit="handleLoginSubmit(event)" class="space-y-4">
+                <div>
+                  <label for="login-user" class="block text-sm font-semibold text-slate-800 mb-1.5 pl-1">
+                    Usuario
+                  </label>
+                  <input id="login-user" type="text" required value="jperez@agroverde.pe"
+                    placeholder="Ej. jperez@agroverde.pe"
+                    class="w-full px-4 py-2.5 rounded-full bg-white text-slate-900 text-sm font-medium border border-transparent focus:border-[#28b45c] focus:outline-none shadow-2xs" />
+                </div>
+
+                <div>
+                  <label for="login-pass" class="block text-sm font-semibold text-slate-800 mb-1.5 pl-1">
+                    Contraseña
+                  </label>
+                  <input id="login-pass" type="password" required value="AgroVerde2026"
+                    placeholder="••••••••••••"
+                    class="w-full px-4 py-2.5 rounded-full bg-white text-slate-900 text-sm font-medium border border-transparent focus:border-[#28b45c] focus:outline-none shadow-2xs" />
+                </div>
+
+                <!-- Selector rápido de rol demo -->
+                <div class="flex items-center justify-center gap-1.5 pt-0.5 text-[11px] text-slate-600">
+                  <span>Acceso rápido:</span>
+                  <button type="button" onclick="fillDemoRole('Juan Pérez', 'JP', 'Supervisor', 'jperez@agroverde.pe')" class="underline hover:text-slate-900 font-medium cursor-pointer">Supervisor</button>
+                  <span>·</span>
+                  <button type="button" onclick="fillDemoRole('Ana Valdivia', 'AV', 'Analista Calidad', 'avaldivia@agroverde.pe')" class="underline hover:text-slate-900 font-medium cursor-pointer">Calidad</button>
+                  <span>·</span>
+                  <button type="button" onclick="fillDemoRole('Carlos Rojas', 'CR', 'Operario Línea 1', 'crojas@agroverde.pe')" class="underline hover:text-slate-900 font-medium cursor-pointer">Operario</button>
+                </div>
+
+                <!-- Botón píldora verde INGRESAR con hoja verde oscuro -->
+                <div class="pt-2 flex justify-center">
+                  <button type="submit"
+                    class="relative inline-flex items-center justify-center px-9 py-3 rounded-full bg-[#28b45c] hover:bg-[#229e50] text-slate-950 font-extrabold text-sm tracking-wide shadow-md transition cursor-pointer">
+                    <!-- Hoja decorativa esquina superior izquierda -->
+                    <svg class="w-6 h-6 text-[#186e37] absolute -top-1.5 -left-1 -rotate-12 pointer-events-none" viewBox="0 0 24 24" fill="currentColor">
+                      <path d="M17 8C8 10 5.9 16.17 3.82 21.34l1.89.66l.95-2.3c.48.17.98.3 1.34.3C19 20 22 3 22 3c-1 2-8 2.25-13 3.25S2 11.5 2 13.5s1.75 3.75 1.75 3.75C7 8 17 8 17 8Z"/>
+                    </svg>
+                    <span>INGRESAR</span>
+                  </button>
+                </div>
+
+                <div class="text-center pt-1">
+                  <button type="button" onclick="showPasswordRecoveryModal()"
+                    class="text-xs text-slate-700 hover:text-slate-950 underline font-medium cursor-pointer">
+                    ¿Olvidaste tu contraseña?
+                  </button>
+                </div>
+              </form>
+            </div>
+          </div>
+        </div>
+      `;
+    }
+
+    function fillDemoRole(name, initials, role, email) {
+      document.getElementById('login-user').value = email;
+      document.getElementById('login-pass').value = 'AgroVerde2026';
+      state.currentUser = {
+        name,
+        initials,
+        role,
+        inspectorInitials: initials
+      };
+      saveState();
+      showToast('Perfil seleccionado', `Credenciales cargadas para ${name} (${role}).`, 'info');
+    }
+
+    function handleLoginSubmit(e) {
+      e.preventDefault();
+      const userVal = document.getElementById('login-user').value.trim();
+      if (!userVal) return;
+      showToast('Sesión iniciada', `Bienvenido(a), ${state.currentUser.name} · Rol: ${state.currentUser.role}.`, 'success');
+      navigateTo('dashboard');
+    }
+
+    function showPasswordRecoveryModal() {
+      openModal(
+        'POLÍTICA DE SEGURIDAD · LEY N.° 29733',
+        '¿Olvidaste tu contraseña?',
+        `
+          <p>Por seguridad y cumplimiento de la <strong>Ley N.° 29733 (Protección de Datos Personales)</strong> y control de acceso basado en roles (<strong>RBAC</strong>), el restablecimiento de credenciales en planta es gestionado por el <strong>Responsable de TI / Administrador</strong>.</p>
+          <div class="p-3 rounded-xl bg-emerald-50 border border-emerald-200 text-xs text-emerald-950">
+            <strong>Canal interno de soporte:</strong> Anexo TI Planta Norte (#104) o validación presencial con código de trabajador. Todo intento queda registrado en la bitácora de auditoría (RF-09).
+          </div>
+        `
+      );
+    }
+
+    // =========================================================================
+    // VISTA 3: RESUMEN OPERATIVO / DASHBOARD
+    // =========================================================================
+    function renderDashboardView() {
+      const extraLots = Math.max(0, state.lots.length - 3);
+      const approvedDelta = state.lots.filter(l => l.qualityStatus === 'APROBADO').length - 2;
+      const observedCount = state.lots.filter(l => l.qualityStatus === 'OBSERVADO').length + 1;
+      const rejectedCount = state.lots.filter(l => l.qualityStatus === 'RECHAZADO').length + 1;
+
+      const totalInProd = state.metrics.inProductionBase + extraLots;
+      const totalApproved = state.metrics.approvedBase + approvedDelta;
+      const totalObsRej = observedCount + rejectedCount;
+
+      return `
+        <div class="view-section min-h-screen bg-agro-forest text-white flex flex-col justify-between">
+          <!-- Barra superior -->
+          <header class="w-full max-w-6xl mx-auto px-5 sm:px-8 pt-6 pb-4 flex flex-wrap items-center justify-between gap-4 border-b border-emerald-800/40">
+            <div class="flex items-center gap-3">
+              <div onclick="navigateTo('landing')" class="w-9 h-9 rounded-xl bg-[#2cd45b] text-forest-950 flex items-center justify-center shadow-md cursor-pointer">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2.3" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M12 20V10m0 0c0-3.5 3-6 6-6 0 3.5-2.5 6-6 6zm0 3c0-3-2.5-5-5-5 0 3 2 5 5 5z" />
+                </svg>
+              </div>
+              <div>
+                <div class="font-display font-extrabold text-sm sm:text-base leading-tight">
+                  <span class="text-limeagro-400">SIGA</span> <span class="text-white">AgroVerde</span>
+                </div>
+                <p class="text-[10px] font-semibold tracking-widest text-emerald-300/70 uppercase">
+                  CONTROL OPERATIVO AGRÍCOLA
+                </p>
+              </div>
+            </div>
+
+            <div class="flex items-center gap-3">
+              ${renderSystemStatusPill('dark')}
+
+              <!-- Píldora Usuario JP / Juan Pérez / Supervisor -->
+              <div class="relative">
+                <button onclick="toggleUserDropdown()"
+                  class="inline-flex items-center gap-2.5 bg-white text-slate-900 pl-1.5 pr-3.5 py-1 rounded-full shadow-md hover:bg-slate-50 transition cursor-pointer">
+                  <span class="w-7 h-7 rounded-full bg-forest-900 text-white text-xs font-bold flex items-center justify-center">
+                    ${state.currentUser.initials}
+                  </span>
+                  <div class="text-left leading-tight">
+                    <p class="text-xs font-bold text-slate-900">${state.currentUser.name}</p>
+                    <p class="text-[10px] text-slate-500 font-medium">${state.currentUser.role}</p>
+                  </div>
+                  <svg class="w-3.5 h-3.5 text-slate-500 ml-0.5" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7" />
+                  </svg>
+                </button>
+
+                <div id="user-dropdown" class="hidden absolute right-0 mt-2 w-48 bg-white rounded-2xl shadow-xl border border-slate-100 py-1.5 text-slate-800 text-xs z-30">
+                  <button onclick="navigateTo('register')" class="w-full text-left px-4 py-2 hover:bg-emerald-50 font-medium cursor-pointer">+ Registrar Nuevo Lote</button>
+                  <button onclick="navigateTo('quality')" class="w-full text-left px-4 py-2 hover:bg-emerald-50 font-medium cursor-pointer">Evaluación de Calidad</button>
+                  <button onclick="navigateTo('traceability')" class="w-full text-left px-4 py-2 hover:bg-emerald-50 font-medium cursor-pointer">Trazabilidad de Lote</button>
+                  <div class="my-1 border-t border-slate-100"></div>
+                  <button onclick="navigateTo('login')" class="w-full text-left px-4 py-2 hover:bg-rose-50 text-rose-600 font-semibold cursor-pointer">Cerrar sesión</button>
+                </div>
+              </div>
+            </div>
+          </header>
+
+          <!-- Contenido Principal del Dashboard -->
+          <section class="w-full max-w-6xl mx-auto px-5 sm:px-8 py-6 space-y-5 flex-1">
+            <!-- Encabezado -->
+            <div class="flex flex-wrap items-end justify-between gap-4">
+              <div>
+                <p class="text-[11px] font-bold uppercase tracking-widest text-[#e6c243]">
+                  CAMPAÑA 2026 · PLANTA NORTE
+                </p>
+                <h1 class="font-display font-extrabold text-3xl sm:text-4xl text-white tracking-tight mt-0.5">
+                  Resumen operativo
+                </h1>
+              </div>
+
+              <button onclick="refreshDashboardData()"
+                class="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-[#153f2b] hover:bg-[#1b4e36] border border-emerald-600/40 text-xs font-medium text-emerald-100 transition cursor-pointer">
+                <svg class="w-3.5 h-3.5 text-limeagro-400" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+                </svg>
+                <span>Actualizado hoy, ${state.dashboardUpdatedTime}</span>
+              </button>
+            </div>
+
+            <!-- Fila Superior: 3 Tarjetas KPI -->
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+              <!-- KPI 1: Lotes en Producción -->
+              <div class="bg-white text-slate-900 rounded-2xl p-5 card-elevated flex flex-col justify-between">
+                <div>
+                  <div class="flex items-center justify-between">
+                    <span class="w-9 h-9 rounded-xl bg-emerald-50 text-emerald-700 flex items-center justify-center">
+                      <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M5 17a2 2 0 104 0 2 2 0 00-4 0zm10 0a2 2 0 104 0 2 2 0 00-4 0zM3 17h2m4 0h6m4 0h2v-5l-3-4h-5V5H6v7H3v5z" />
+                      </svg>
+                    </span>
+                    <span class="text-[10px] font-bold uppercase tracking-wider text-emerald-600 flex items-center gap-1">
+                      <span class="w-1.5 h-1.5 rounded-full bg-emerald-500"></span> EN VIVO
+                    </span>
+                  </div>
+
+                  <p class="text-xs font-semibold text-slate-500 mt-4">Lotes en Producción</p>
+                  <p class="font-display font-extrabold text-4xl text-[#15803d] mt-1">${totalInProd}</p>
+                </div>
+
+                <div class="mt-4 pt-3 border-t border-slate-100 flex items-center justify-between text-[11px]">
+                  <span class="font-bold text-emerald-600">+${2 + extraLots} desde la semana pasada</span>
+                  <span class="text-slate-400 font-medium">${state.metrics.hectares} ha en manejo activo</span>
+                </div>
+              </div>
+
+              <!-- KPI 2: Lotes Aprobados -->
+              <div class="bg-white text-slate-900 rounded-2xl p-5 card-elevated flex flex-col justify-between">
+                <div>
+                  <div class="flex items-center justify-between">
+                    <span class="w-9 h-9 rounded-xl bg-emerald-50 text-emerald-700 flex items-center justify-center">
+                      <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                      </svg>
+                    </span>
+                    <span class="text-[10px] font-bold uppercase tracking-wider text-emerald-600 flex items-center gap-1">
+                      <span class="w-1.5 h-1.5 rounded-full bg-emerald-500"></span> EN VIVO
+                    </span>
+                  </div>
+
+                  <p class="text-xs font-semibold text-slate-500 mt-4">Lotes Aprobados</p>
+                  <div class="flex items-center gap-2.5 mt-1">
+                    <p class="font-display font-extrabold text-4xl text-[#15803d]">${totalApproved}</p>
+                    <span class="px-2.5 py-0.5 rounded-full text-[11px] font-bold bg-emerald-100 text-emerald-800">
+                      Aprobado
+                    </span>
+                  </div>
+                </div>
+
+                <div class="mt-4 pt-3 border-t border-slate-100 flex items-center justify-between text-[11px]">
+                  <span class="font-bold text-emerald-600">${state.metrics.conformity} de conformidad</span>
+                  <span class="text-slate-400 font-medium">Listos para despacho</span>
+                </div>
+              </div>
+
+              <!-- KPI 3: Lotes Observados/Rechazados -->
+              <div onclick="navigateTo('quality')"
+                class="bg-white text-slate-900 rounded-2xl p-5 card-elevated flex flex-col justify-between cursor-pointer hover:ring-2 hover:ring-amber-300 transition">
+                <div>
+                  <div class="flex items-center justify-between">
+                    <span class="w-9 h-9 rounded-xl bg-amber-50 text-amber-600 flex items-center justify-center">
+                      <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+                      </svg>
+                    </span>
+                    <span class="text-[10px] font-bold uppercase tracking-wider text-amber-600 flex items-center gap-1">
+                      <span class="w-1.5 h-1.5 rounded-full bg-amber-500"></span> EN VIVO
+                    </span>
+                  </div>
+
+                  <p class="text-xs font-semibold text-slate-500 mt-4">Lotes Observados/Rechazados</p>
+                  <div class="flex items-center gap-2.5 mt-1">
+                    <p class="font-display font-extrabold text-4xl text-rose-600">${totalObsRej}</p>
+                    <span class="px-2.5 py-0.5 rounded-full text-[11px] font-bold bg-amber-100 text-amber-800">
+                      Requiere revisión
+                    </span>
+                  </div>
+                </div>
+
+                <div class="mt-4 pt-3 border-t border-slate-100 flex items-center justify-between text-[11px]">
+                  <span class="font-bold text-rose-600">${observedCount} observados · ${rejectedCount} rechazado</span>
+                  <span class="text-slate-400 font-medium">Atención prioritaria</span>
+                </div>
+              </div>
+            </div>
+
+            <!-- Fila Inferior: 2 Tarjetas (Stock Disponible y Pedidos Pendientes) -->
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-4">
+              <!-- Tarjeta Izquierda: Stock Disponible -->
+              <div class="bg-white text-slate-900 rounded-2xl p-5 sm:p-6 card-elevated flex flex-col justify-between">
+                <div>
+                  <div class="flex items-center justify-between mb-4">
+                    <div class="flex items-center gap-2.5">
+                      <span class="w-8 h-8 rounded-lg bg-emerald-50 text-emerald-700 flex items-center justify-center">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24">
+                          <path stroke-linecap="round" stroke-linejoin="round" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4" />
+                        </svg>
+                      </span>
+                      <h2 class="font-display font-bold text-base text-slate-900">Stock Disponible</h2>
+                    </div>
+                    <span class="text-[10px] font-bold uppercase tracking-wider text-slate-400">INVENTARIO ACTUAL</span>
+                  </div>
+
+                  <div class="space-y-4">
+                    ${state.stock.map(item => {
+                      const pct = Math.min(100, Math.round((item.kg / item.maxKg) * 100));
+                      return `
+                        <div>
+                          <div class="flex items-end justify-between text-xs mb-1.5">
+                            <div>
+                              <p class="font-bold text-slate-800">${item.product}</p>
+                              <p class="text-[11px] text-slate-400">${item.chamber}</p>
+                            </div>
+                            <span class="font-display font-extrabold text-sm text-[#15803d]">
+                              ${item.kg.toLocaleString('en-US')} kg
+                            </span>
+                          </div>
+                          <div class="w-full h-2 bg-slate-100 rounded-full overflow-hidden">
+                            <div class="h-full bg-[#2cd45b] rounded-full transition-all duration-500" style="width: ${pct}%"></div>
+                          </div>
+                        </div>
+                      `;
+                    }).join('')}
+                  </div>
+                </div>
+
+                <div class="mt-5 pt-3 border-t border-slate-100 flex items-center gap-2 text-[11px] text-slate-500 font-medium">
+                  <svg class="w-3.5 h-3.5 text-emerald-600" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M12 3v18m0-18l-3 3m3-3l3 3m-3 15l-3-3m3 3l3-3M3 12h18" />
+                  </svg>
+                  <span>Cadena de frío estable · 4.2 °C promedio</span>
+                </div>
+              </div>
+
+              <!-- Tarjeta Derecha: Pedidos Pendientes -->
+              <div class="bg-white text-slate-900 rounded-2xl p-5 sm:p-6 card-elevated flex flex-col justify-between">
+                <div>
+                  <div class="flex items-center justify-between mb-4">
+                    <div class="flex items-center gap-2.5">
+                      <span class="w-8 h-8 rounded-lg bg-emerald-50 text-emerald-700 flex items-center justify-center">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24">
+                          <path stroke-linecap="round" stroke-linejoin="round" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
+                        </svg>
+                      </span>
+                      <h2 class="font-display font-bold text-base text-slate-900">Pedidos Pendientes</h2>
+                    </div>
+                    <span class="text-[10px] font-bold uppercase tracking-wider text-slate-400">1 ENVÍO ACTIVO</span>
+                  </div>
+
+                  <div class="flex flex-wrap items-start justify-between gap-2">
+                    <div>
+                      <p class="font-display font-extrabold text-sm sm:text-base text-slate-900">
+                        Pedido ${state.pendingOrder.code} (${state.pendingOrder.destination})
+                      </p>
+                      <p class="text-xs text-slate-500 mt-0.5">
+                        ${state.pendingOrder.kg} · ${state.pendingOrder.product} · ${state.pendingOrder.departure}
+                      </p>
+                    </div>
+                    <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[11px] font-bold bg-amber-100 text-amber-800">
+                      <span class="w-1.5 h-1.5 rounded-full bg-amber-500"></span>
+                      ${state.pendingOrder.status}
+                    </span>
+                  </div>
+
+                  <!-- Stepper Horizontal: Preparación -> Inspección -> Despacho -->
+                  <div class="mt-7 px-2">
+                    <div class="flex items-center justify-between relative">
+                      <!-- Paso 1: Preparación -->
+                      <div class="flex flex-col items-center z-10">
+                        <span class="w-3.5 h-3.5 rounded-full bg-[#2cd45b] ring-4 ring-emerald-100"></span>
+                        <span class="text-[11px] font-bold text-slate-700 mt-2">Preparación</span>
+                      </div>
+
+                      <!-- Línea verde -->
+                      <div class="flex-1 h-0.5 bg-[#2cd45b] -mt-5 mx-2"></div>
+
+                      <!-- Paso 2: Inspección -->
+                      <div class="flex flex-col items-center z-10">
+                        <span class="w-3.5 h-3.5 rounded-full bg-white border-[3px] border-amber-400 ring-4 ring-amber-50"></span>
+                        <span class="text-[11px] font-bold text-slate-700 mt-2">Inspección</span>
+                      </div>
+
+                      <!-- Línea gris -->
+                      <div class="flex-1 h-0.5 bg-slate-200 -mt-5 mx-2"></div>
+
+                      <!-- Paso 3: Despacho -->
+                      <div class="flex flex-col items-center z-10">
+                        <span class="w-3.5 h-3.5 rounded-full bg-slate-300"></span>
+                        <span class="text-[11px] font-medium text-slate-400 mt-2">Despacho</span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="mt-4 pt-3 border-t border-slate-100 flex items-center justify-between text-[11px] text-slate-500">
+                  <span>Lotes aprobados vinculados: <strong>L-004</strong> (600 kg)</span>
+                  <button onclick="navigateTo('traceability', { lotCode: 'L-004' })" class="text-emerald-700 font-bold hover:underline cursor-pointer">
+                    Ver ficha →
+                  </button>
+                </div>
+              </div>
+            </div>
+
+            <!-- Barra Inferior de Acciones -->
+            <div class="pt-2 flex flex-wrap items-center justify-between gap-4">
+              <div class="flex flex-wrap items-center gap-3">
+                <button onclick="navigateTo('register')"
+                  class="inline-flex items-center gap-2 px-5 py-3 rounded-full bg-[#2cd45b] hover:bg-[#24ba4e] text-forest-950 font-extrabold text-xs sm:text-sm shadow-lg shadow-emerald-500/20 transition cursor-pointer">
+                  <span>+ Registrar Nuevo Lote</span>
+                </button>
+
+                <button onclick="navigateTo('traceability')"
+                  class="inline-flex items-center gap-2 px-5 py-3 rounded-full bg-[#133d29] hover:bg-[#194e35] text-white font-bold text-xs sm:text-sm border border-emerald-500/40 transition cursor-pointer">
+                  <svg class="w-4 h-4 text-limeagro-400" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-4.35-4.35M10 18a8 8 0 100-16 8 8 0 000 16z" />
+                  </svg>
+                  <span>Consultar Trazabilidad</span>
+                </button>
+
+                <button onclick="navigateTo('quality')"
+                  class="inline-flex items-center gap-2 px-5 py-3 rounded-full bg-[#133d29] hover:bg-[#194e35] text-emerald-100 font-semibold text-xs sm:text-sm border border-emerald-600/30 transition cursor-pointer">
+                  <span>Evaluación de Calidad</span>
+                </button>
+              </div>
+
+              <div class="inline-flex items-center gap-2 text-xs text-emerald-200/75">
+                <span class="w-4 h-4 rounded-full border border-emerald-400/50 flex items-center justify-center text-[10px] text-limeagro-400">✓</span>
+                <span>Datos sincronizados con control de calidad</span>
+              </div>
+            </div>
+          </section>
+
+          <div class="h-4"></div>
+        </div>
+      `;
+    }
+
+    function toggleUserDropdown() {
+      const dd = document.getElementById('user-dropdown');
+      if (dd) dd.classList.toggle('hidden');
+    }
+
+    function refreshDashboardData() {
+      const now = new Date();
+      state.dashboardUpdatedTime = `${String(now.getHours()).padStart(2, '0')}:${String(now.getMinutes()).padStart(2, '0')}`;
+      saveState();
+      showToast('Indicadores actualizados', `Datos operativos sincronizados a las ${state.dashboardUpdatedTime}.`, 'success');
+      renderCurrentView();
+    }
+
+    // =========================================================================
+    // VISTA 4: REGISTRAR NUEVO LOTE
+    // =========================================================================
+    function renderRegisterLotView() {
+      const autoCode = `LOTE-2026-${String(state.nextCorrelative).padStart(3, '0')}`;
+      return `
+        <div class="view-section min-h-screen bg-agro-light-gradient flex flex-col items-center justify-center p-4 sm:p-8">
+          <div class="w-full max-w-3xl bg-white rounded-[2rem] p-6 sm:p-10 card-soft">
+            <!-- Navegación superior discreta -->
+            <div class="flex items-center justify-between mb-4">
+              <button onclick="navigateTo('dashboard')"
+                class="text-xs font-semibold text-slate-500 hover:text-forest-900 inline-flex items-center gap-1 transition cursor-pointer">
+                ← Resumen operativo
+              </button>
+              ${renderSystemStatusPill('light')}
+            </div>
+
+            <!-- Cabecera Centrada -->
+            <div class="text-center max-w-md mx-auto mb-7">
+              <div class="inline-flex items-center gap-2.5 justify-center mb-3">
+                <span class="w-8 h-8 rounded-xl bg-[#2cd45b] text-forest-950 flex items-center justify-center shadow-xs">
+                  <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2.4" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M12 20V10m0 0c0-3.5 3-6 6-6 0 3.5-2.5 6-6 6zm0 3c0-3-2.5-5-5-5 0 3 2 5 5 5z" />
+                  </svg>
+                </span>
+                <div class="text-left leading-none">
+                  <p class="font-display font-extrabold text-sm text-slate-900">
+                    <span class="text-[#16a34a]">SIGA</span> AgroVerde
+                  </p>
+                  <p class="text-[9px] font-bold tracking-widest text-slate-400 uppercase mt-0.5">
+                    CONTROL OPERATIVO AGRÍCOLA
+                  </p>
+                </div>
+              </div>
+
+              <h1 class="font-display font-extrabold text-2xl sm:text-3xl text-slate-900 tracking-tight">
+                Registrar Nuevo Lote
+              </h1>
+              <p class="text-xs sm:text-sm text-slate-500 mt-1.5">
+                Ingresa los datos de recepción para iniciar la trazabilidad del lote.
+              </p>
+            </div>
+
+            <hr class="border-slate-100 mb-6" />
+
+            <!-- Formulario en Cuadrícula de 2 Columnas -->
+            <form onsubmit="handleRegisterLotSubmit(event)" class="space-y-5">
+              <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-5">
+                <!-- Campo 1: Código de Lote (Automático) -->
+                <div>
+                  <div class="flex items-center justify-between mb-1.5">
+                    <label for="reg-code" class="text-xs font-bold text-slate-700">Código de Lote</label>
+                    <span class="text-[11px] font-medium text-slate-400 inline-flex items-center gap-1">
+                      <svg class="w-3 h-3" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
+                      </svg>
+                      Automático
+                    </span>
+                  </div>
+                  <div class="relative flex items-center bg-[#eaedeb] rounded-xl px-3.5 py-3 border border-slate-200/70">
+                    <span class="w-7 h-7 rounded-lg bg-white text-slate-500 flex items-center justify-center mr-3 shadow-2xs shrink-0">
+                      <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M4 7V5a1 1 0 011-1h2M4 17v2a1 1 0 001 1h2m10-16h2a1 1 0 011 1v2m-3 14h2a1 1 0 001-1v-2M8 12h8" />
+                      </svg>
+                    </span>
+                    <input id="reg-code" type="text" readonly value="${autoCode}"
+                      class="bg-transparent w-full text-sm font-bold text-slate-500 focus:outline-none select-all" />
+                  </div>
+                </div>
+
+                <!-- Campo 2: Producto -->
+                <div>
+                  <label for="reg-product" class="block text-xs font-bold text-slate-700 mb-1.5">Producto</label>
+                  <div class="relative flex items-center bg-[#eaedeb] rounded-xl px-3.5 py-3 border border-slate-200/70 focus-within:border-[#2cd45b] focus-within:bg-white transition">
+                    <span class="w-7 h-7 rounded-lg bg-emerald-100 text-emerald-700 flex items-center justify-center mr-3 shrink-0">
+                      <svg class="w-4 h-4" viewBox="0 0 24 24" fill="currentColor">
+                        <path d="M17 8C8 10 5.9 16.17 3.82 21.34l1.89.66l.95-2.3c.48.17.98.3 1.34.3C19 20 22 3 22 3c-1 2-8 2.25-13 3.25S2 11.5 2 13.5s1.75 3.75 1.75 3.75C7 8 17 8 17 8Z"/>
+                      </svg>
+                    </span>
+                    <select id="reg-product" class="bg-transparent w-full text-sm font-bold text-slate-800 focus:outline-none cursor-pointer">
+                      <option value="Espárrago Verde">Espárrago Verde</option>
+                      <option value="Palta Hass">Palta Hass</option>
+                      <option value="Arándano">Arándano</option>
+                    </select>
+                  </div>
+                  <p class="text-[11px] text-slate-400 mt-1 pl-1">Alternativa disponible: Palta Hass</p>
+                </div>
+
+                <!-- Campo 3: Proveedor / Fundo -->
+                <div>
+                  <label for="reg-origin" class="block text-xs font-bold text-slate-700 mb-1.5">Proveedor / Fundo</label>
+                  <div class="relative flex items-center bg-[#eaedeb] rounded-xl px-3.5 py-3 border border-slate-200/70 focus-within:border-[#2cd45b] focus-within:bg-white transition">
+                    <span class="w-7 h-7 rounded-lg bg-emerald-100 text-emerald-700 flex items-center justify-center mr-3 shrink-0">
+                      <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M3 21h18M5 21V9l7-4 7 4v12M9 21v-6h6v6" />
+                      </svg>
+                    </span>
+                    <select id="reg-origin" class="bg-transparent w-full text-sm font-bold text-slate-800 focus:outline-none cursor-pointer">
+                      <option value="Fundo El Sol">Fundo El Sol</option>
+                      <option value="Fundo Santa Rosa">Fundo Santa Rosa</option>
+                      <option value="Agropecuaria Valle Verde">Agropecuaria Valle Verde</option>
+                    </select>
+                  </div>
+                </div>
+
+                <!-- Campo 4: Cantidad (Kg) -->
+                <div>
+                  <label for="reg-kg" class="block text-xs font-bold text-slate-700 mb-1.5">Cantidad (Kg)</label>
+                  <div class="relative flex items-center bg-[#eaedeb] rounded-xl px-3.5 py-3 border border-slate-200/70 focus-within:border-[#2cd45b] focus-within:bg-white transition">
+                    <span class="w-7 h-7 rounded-lg bg-emerald-100 text-emerald-700 flex items-center justify-center mr-3 shrink-0">
+                      <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M3 6l3 1m0 0l-3 9a5.002 5.002 0 006.001 0M6 7l3 9M6 7l6-2m6 2l3-1m-3 1l-3 9a5.002 5.002 0 006.001 0M18 7l3 9m-3-9l-6-2m0-2v2m0 16V5m0 16H9m3 0h3" />
+                      </svg>
+                    </span>
+                    <input id="reg-kg" type="number" min="10" max="50000" required value="600"
+                      class="bg-transparent w-full text-sm font-bold text-slate-700 focus:outline-none" />
+                    <span class="text-xs font-bold text-slate-500 ml-2">kg</span>
+                  </div>
+                </div>
+
+                <!-- Campo 5: Fecha de Recepción -->
+                <div>
+                  <label for="reg-date" class="block text-xs font-bold text-slate-700 mb-1.5">Fecha de Recepción</label>
+                  <div class="relative flex items-center bg-[#eaedeb] rounded-xl px-3.5 py-3 border border-slate-200/70 focus-within:border-[#2cd45b] focus-within:bg-white transition">
+                    <span class="w-7 h-7 rounded-lg bg-emerald-100 text-emerald-700 flex items-center justify-center mr-3 shrink-0">
+                      <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                      </svg>
+                    </span>
+                    <input id="reg-date" type="text" required value="29/09/2026"
+                      class="bg-transparent w-full text-sm font-bold text-slate-800 focus:outline-none" />
+                  </div>
+                </div>
+
+                <!-- Campo 6: Estado Inicial -->
+                <div>
+                  <label for="reg-status" class="block text-xs font-bold text-slate-700 mb-1.5">Estado Inicial</label>
+                  <div class="relative flex items-center bg-[#eaedeb] rounded-xl px-3.5 py-3 border border-slate-200/70 focus-within:border-[#2cd45b] focus-within:bg-white transition">
+                    <span class="w-7 h-7 rounded-lg bg-emerald-100 text-emerald-700 flex items-center justify-center mr-3 shrink-0">
+                      <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24">
+                        <circle cx="12" cy="12" r="7" />
+                        <circle cx="12" cy="12" r="2" fill="currentColor" />
+                      </svg>
+                    </span>
+                    <select id="reg-status" class="bg-transparent w-full text-sm font-bold text-slate-800 focus:outline-none cursor-pointer">
+                      <option value="En Recepción">En Recepción</option>
+                      <option value="En Proceso · Línea 1">En Proceso · Línea 1</option>
+                      <option value="En Inspección">En Inspección</option>
+                    </select>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Botón Ancho REGISTRAR LOTE -->
+              <div class="pt-2">
+                <button type="submit"
+                  class="w-full py-3.5 px-6 rounded-full bg-[#2cd45b] hover:bg-[#24ba4e] text-forest-950 font-extrabold text-sm tracking-wide shadow-lg shadow-emerald-500/20 flex items-center justify-center gap-2 transition cursor-pointer">
+                  <span class="w-5 h-5 rounded-full border-2 border-forest-950 flex items-center justify-center text-xs font-black leading-none">+</span>
+                  <span>REGISTRAR LOTE</span>
+                </button>
+              </div>
+
+              <!-- Pie centrado con escudo -->
+              <div class="text-center flex items-center justify-center gap-1.5 text-xs text-slate-500 font-medium">
+                <svg class="w-3.5 h-3.5 text-slate-400" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
+                </svg>
+                <span>Los datos se sincronizarán con control de calidad</span>
+              </div>
+            </form>
+          </div>
+        </div>
+      `;
+    }
+
+    function handleRegisterLotSubmit(e) {
+      e.preventDefault();
+      const code = document.getElementById('reg-code').value.trim();
+      const productFull = document.getElementById('reg-product').value;
+      const origin = document.getElementById('reg-origin').value;
+      const kg = parseInt(document.getElementById('reg-kg').value, 10) || 600;
+      const receptionDateInput = document.getElementById('reg-date').value.trim() || '29/09/2026';
+      const shortProduct = productFull.includes('Espárrago')
+        ? 'Espárrago'
+        : productFull.includes('Palta')
+        ? 'Palta'
+        : 'Arándano';
+
+      const lineMap = {
+        'Espárrago': 'Línea 1',
+        'Palta': 'Línea 2',
+        'Arándano': 'Línea 3'
+      };
+
+      const now = new Date();
+      const timeFormatted = `${String(now.getHours()).padStart(2, '0')}:${String(now.getMinutes()).padStart(2, '0')} AM`;
+
+      const newLot = {
+        code,
+        regCode: `REG · 2026-${String(state.nextCorrelative).padStart(3, '0')}-PE`,
+        product: shortProduct,
+        productFull,
+        kg,
+        destination: 'EE. UU.',
+        origin,
+        originLocation: `${origin} · La Libertad`,
+        line: lineMap[shortProduct] || 'Línea 1',
+        receptionDate: '29 sep 2026',
+        receptionDateInput,
+        receptionTime: timeFormatted,
+        productionTime: 'En curso',
+        coldChain: '3.4 °C · Estable',
+        chamber: 'Cámara de Frío B-12',
+        qualityStatus: 'PENDIENTE',
+        qualityScore: 'Pendiente',
+        qualityLabel: 'Pendiente de inspección',
+        reprocess: false,
+        observations: 'Lote recién recepcionado en planta.',
+        stagesCompleted: 2,
+        dispatchStatus: 'Pendiente de control de calidad',
+        dispatchBadge: 'PENDIENTE',
+        synced: state.isOnline
+      };
+
+      state.lots.unshift(newLot);
+      state.nextCorrelative += 1;
+      state.selectedTraceCode = newLot.code;
+      state.selectedQualityCode = newLot.code;
+
+      if (!state.isOnline) {
+        state.pendingSyncCount += 1;
+      }
+
+      saveState();
+
+      showToast(
+        state.isOnline ? `Lote ${code} registrado` : `Lote ${code} guardado en caché offline`,
+        `${productFull} (${kg} kg) · ${origin}. Disponible en Trazabilidad y Control de Calidad.`,
+        state.isOnline ? 'success' : 'warning'
+      );
+
+      navigateTo('traceability', { lotCode: newLot.code });
+    }
+
+    // =========================================================================
+    // VISTA 5: EVALUACIÓN DE CONTROL DE CALIDAD
+    // =========================================================================
+    function renderQualityView() {
+      const activeLot = state.lots.find(l => l.code === state.selectedQualityCode) || state.lots[0];
+      const verdict = state.qualityFormDraft.verdict;
+      const obsText = state.qualityFormDraft.observations;
+      const sendToReprocess = state.qualityFormDraft.sendToReprocess;
+
+      return `
+        <div class="view-section min-h-screen bg-agro-forest text-white flex flex-col justify-between relative overflow-hidden">
+          <!-- Círculos decorativos sutiles en el fondo -->
+          <div class="w-80 h-80 rounded-full bg-emerald-800/20 absolute -bottom-24 -left-24 pointer-events-none"></div>
+          <div class="w-72 h-72 rounded-full bg-emerald-700/15 absolute top-24 -right-20 pointer-events-none"></div>
+
+          <!-- Barra Superior -->
+          <header class="w-full max-w-6xl mx-auto px-5 sm:px-8 pt-6 pb-4 flex items-center justify-between relative z-10">
+            <div onclick="navigateTo('dashboard')" class="flex items-center gap-2.5 cursor-pointer">
+              <span class="w-8 h-8 rounded-xl bg-[#2cd45b] text-forest-950 flex items-center justify-center shadow-sm">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2.4" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M12 20V10m0 0c0-3.5 3-6 6-6 0 3.5-2.5 6-6 6zm0 3c0-3-2.5-5-5-5 0 3 2 5 5 5z" />
+                </svg>
+              </span>
+              <div class="leading-none">
+                <p class="font-display font-extrabold text-sm text-white">SIGA</p>
+                <p class="text-[9px] font-bold tracking-widest text-limeagro-400 uppercase">AGROVERDE</p>
+              </div>
+            </div>
+
+            <div class="flex items-center gap-3">
+              ${renderSystemStatusPill('dark')}
+              <span class="w-8 h-8 rounded-full bg-[#174730] border border-emerald-500/40 text-xs font-bold text-white flex items-center justify-center">
+                AV
+              </span>
+            </div>
+          </header>
+
+          <!-- Tarjeta Blanca Central -->
+          <section class="w-full max-w-3xl mx-auto px-4 sm:px-6 py-4 relative z-10 my-auto">
+            <div class="bg-white text-slate-900 rounded-[1.75rem] p-6 sm:p-8 card-elevated space-y-6">
+              <!-- Encabezado de tarjeta -->
+              <div class="flex flex-wrap items-start justify-between gap-3">
+                <div>
+                  <p class="text-[11px] font-bold uppercase tracking-wider text-emerald-700 flex items-center gap-1.5">
+                    <span class="w-3.5 h-3.5 rounded bg-emerald-100 text-emerald-700 inline-flex items-center justify-center text-[9px]">✓</span>
+                    OPERACIONES · CONTROL DE CALIDAD
+                  </p>
+                  <h1 class="font-display font-extrabold text-2xl sm:text-3xl text-slate-900 tracking-tight mt-1">
+                    Evaluación de Control de Calidad
+                  </h1>
+                </div>
+
+                <span class="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full text-[11px] font-extrabold uppercase tracking-wide bg-amber-100 text-amber-800">
+                  <span class="w-2 h-2 rounded-full bg-amber-500"></span>
+                  INSPECCIÓN EN CURSO
+                </span>
+              </div>
+
+              <hr class="border-slate-100" />
+
+              <!-- LOTE A EVALUAR -->
+              <div>
+                <label for="quality-lot-select" class="block text-[11px] font-bold uppercase tracking-wider text-slate-400 mb-2">
+                  LOTE A EVALUAR
+                </label>
+                <div class="relative flex items-center bg-[#f4f6f5] hover:bg-[#edf1ef] rounded-2xl px-4 py-3.5 border border-slate-200/80 transition">
+                  <span class="w-9 h-9 rounded-xl bg-emerald-100 text-emerald-700 flex items-center justify-center mr-3.5 shrink-0">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4" />
+                    </svg>
+                  </span>
+                  <div class="flex-1 min-w-0">
+                    <select id="quality-lot-select" onchange="handleQualityLotChange(this.value)"
+                      class="w-full bg-transparent font-display font-bold text-sm sm:text-base text-slate-900 focus:outline-none cursor-pointer">
+                      ${state.lots.map(l => `
+                        <option value="${l.code}" ${l.code === activeLot.code ? 'selected' : ''}>
+                          Lote ${l.code} - ${l.product} (${l.kg} kg)
+                        </option>
+                      `).join('')}
+                    </select>
+                    <p class="text-[11px] font-semibold uppercase tracking-wide text-slate-400 mt-0.5 truncate">
+                      RECEPCIÓN ${activeLot.receptionDate.toUpperCase()} · ORIGEN ${activeLot.origin.toUpperCase()}
+                    </p>
+                  </div>
+                </div>
+              </div>
+
+              <!-- RESULTADO DE LA EVALUACIÓN -->
+              <div>
+                <div class="flex items-center justify-between mb-2.5">
+                  <span class="text-[11px] font-bold uppercase tracking-wider text-slate-400">
+                    RESULTADO DE LA EVALUACIÓN
+                  </span>
+                  <span class="text-[11px] text-slate-400 font-medium">Seleccione una opción</span>
+                </div>
+
+                <div class="grid grid-cols-1 sm:grid-cols-3 gap-3.5">
+                  <!-- Opción 1: APROBADO -->
+                  <button type="button" onclick="selectQualityVerdict('APROBADO')"
+                    class="text-left rounded-2xl p-4 border-2 transition cursor-pointer ${
+                      verdict === 'APROBADO'
+                        ? 'bg-[#e7f8ed] border-[#2cd45b] shadow-sm'
+                        : 'bg-[#f2fbf5] border-emerald-200/70 hover:border-emerald-300'
+                    }">
+                    <div class="flex items-center justify-between mb-3">
+                      <span class="w-7 h-7 rounded-lg bg-white text-emerald-600 flex items-center justify-center font-bold shadow-2xs">
+                        ✓
+                      </span>
+                      <span class="w-4 h-4 rounded-full border-2 flex items-center justify-center ${
+                        verdict === 'APROBADO' ? 'border-emerald-600' : 'border-slate-300 bg-white'
+                      }">
+                        ${verdict === 'APROBADO' ? '<span class="w-2 h-2 rounded-full bg-emerald-600"></span>' : ''}
+                      </span>
+                    </div>
+                    <p class="font-display font-extrabold text-sm text-emerald-700">APROBADO</p>
+                    <p class="text-[11px] text-slate-600 mt-1 leading-snug">
+                      Cumple con los parámetros de calidad.
+                    </p>
+                  </button>
+
+                  <!-- Opción 2: OBSERVADO -->
+                  <button type="button" onclick="selectQualityVerdict('OBSERVADO')"
+                    class="text-left rounded-2xl p-4 border-2 transition cursor-pointer ${
+                      verdict === 'OBSERVADO'
+                        ? 'bg-[#fef6dc] border-[#d99b26] shadow-sm'
+                        : 'bg-[#fef9e7] border-amber-200/70 hover:border-amber-300'
+                    }">
+                    <div class="flex items-center justify-between mb-3">
+                      <span class="w-7 h-7 rounded-lg bg-white text-amber-600 flex items-center justify-center font-bold shadow-2xs">
+                        ⚠
+                      </span>
+                      <span class="w-4 h-4 rounded-full border-2 flex items-center justify-center ${
+                        verdict === 'OBSERVADO' ? 'border-[#9a6700]' : 'border-slate-300 bg-white'
+                      }">
+                        ${verdict === 'OBSERVADO' ? '<span class="w-2 h-2 rounded-full bg-[#9a6700]"></span>' : ''}
+                      </span>
+                    </div>
+                    <p class="font-display font-extrabold text-sm text-[#a16207]">OBSERVADO</p>
+                    <p class="text-[11px] text-slate-600 mt-1 leading-snug">
+                      Requiere revisión o reproceso antes de continuar.
+                    </p>
+                  </button>
+
+                  <!-- Opción 3: RECHAZADO -->
+                  <button type="button" onclick="selectQualityVerdict('RECHAZADO')"
+                    class="text-left rounded-2xl p-4 border-2 transition cursor-pointer ${
+                      verdict === 'RECHAZADO'
+                        ? 'bg-[#fde8ea] border-rose-500 shadow-sm'
+                        : 'bg-[#fef2f3] border-rose-200/70 hover:border-rose-300'
+                    }">
+                    <div class="flex items-center justify-between mb-3">
+                      <span class="w-7 h-7 rounded-lg bg-white text-rose-600 flex items-center justify-center font-bold shadow-2xs">
+                        ✕
+                      </span>
+                      <span class="w-4 h-4 rounded-full border-2 flex items-center justify-center ${
+                        verdict === 'RECHAZADO' ? 'border-rose-600' : 'border-slate-300 bg-white'
+                      }">
+                        ${verdict === 'RECHAZADO' ? '<span class="w-2 h-2 rounded-full bg-rose-600"></span>' : ''}
+                      </span>
+                    </div>
+                    <p class="font-display font-extrabold text-sm text-rose-700">RECHAZADO</p>
+                    <p class="text-[11px] text-slate-600 mt-1 leading-snug">
+                      No cumple con los criterios de aceptación.
+                    </p>
+                  </button>
+                </div>
+              </div>
+
+              <!-- OBSERVACIONES DEL INSPECTOR -->
+              <div>
+                <div class="flex items-center justify-between mb-1.5">
+                  <label for="quality-obs" class="text-[11px] font-bold uppercase tracking-wider text-slate-400">
+                    OBSERVACIONES DEL INSPECTOR
+                  </label>
+                  <span id="quality-char-count" class="text-[11px] text-slate-400 font-medium">
+                    ${obsText.length} / 500
+                  </span>
+                </div>
+                <textarea id="quality-obs" rows="3" maxlength="500"
+                  oninput="updateQualityObservations(this.value)"
+                  placeholder="Ingrese los hallazgos de la inspección física y madurez del producto..."
+                  class="w-full rounded-2xl border border-slate-200 bg-[#fbfcfb] p-3.5 text-sm text-slate-800 placeholder:text-slate-400 focus:border-[#2cd45b] focus:bg-white focus:outline-none transition">${obsText}</textarea>
+                <p class="text-[11px] text-slate-400 mt-1.5 flex items-center gap-1.5">
+                  <span class="w-3.5 h-3.5 rounded-full border border-slate-300 inline-flex items-center justify-center text-[9px]">i</span>
+                  <span>Incluya calibre, color, firmeza y cualquier desviación relevante.</span>
+                </p>
+              </div>
+
+              <!-- Fila Toggle: Enviar a Reproceso -->
+              <div class="rounded-2xl bg-[#f3f8f4] border border-emerald-200/70 px-4 py-3.5 flex items-center justify-between gap-4">
+                <div class="flex items-center gap-3">
+                  <span class="w-9 h-9 rounded-full bg-emerald-100 text-emerald-700 flex items-center justify-center shrink-0">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+                    </svg>
+                  </span>
+                  <div>
+                    <p class="font-display font-bold text-sm text-slate-900">Enviar a Reproceso</p>
+                    <p class="text-xs text-slate-500">El lote quedará bloqueado hasta completar una nueva evaluación.</p>
+                  </div>
+                </div>
+
+                <!-- Switch Toggle Verde -->
+                <button type="button" role="switch" aria-checked="${sendToReprocess}" onclick="toggleQualityReprocess()"
+                  class="w-12 h-7 rounded-full p-1 transition-colors cursor-pointer shrink-0 ${
+                    sendToReprocess ? 'bg-[#2cd45b]' : 'bg-slate-300'
+                  }">
+                  <span class="block w-5 h-5 rounded-full bg-white shadow-sm transform transition-transform ${
+                    sendToReprocess ? 'translate-x-5' : 'translate-x-0'
+                  }"></span>
+                </button>
+              </div>
+
+              <!-- Botón Ancho GUARDAR INSPECCIÓN -->
+              <div>
+                <button type="button" onclick="handleSaveQualityInspection()"
+                  class="w-full py-3.5 px-6 rounded-full bg-[#2cd45b] hover:bg-[#24ba4e] text-forest-950 font-extrabold text-sm tracking-wide shadow-lg shadow-emerald-500/20 flex items-center justify-center gap-2 transition cursor-pointer">
+                  <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2.3" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M8 7H5a2 2 0 00-2 2v9a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-3m-1 4l-3 3m0 0l-3-3m3 3V4" />
+                  </svg>
+                  <span>GUARDAR INSPECCIÓN</span>
+                </button>
+
+                <p class="text-center text-[11px] text-slate-400 mt-3 flex items-center justify-center gap-1.5">
+                  <svg class="w-3.5 h-3.5 text-slate-400" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
+                  </svg>
+                  <span>El registro quedará asociado al lote ${activeLot.code} y al Inspector activo.</span>
+                </p>
+              </div>
+            </div>
+          </section>
+
+          <div class="h-4"></div>
+        </div>
+      `;
+    }
+
+    function handleQualityLotChange(lotCode) {
+      state.selectedQualityCode = lotCode;
+      saveState();
+      renderCurrentView();
+    }
+
+    function selectQualityVerdict(verdict) {
+      state.qualityFormDraft.verdict = verdict;
+      if (verdict === 'OBSERVADO') {
+        state.qualityFormDraft.sendToReprocess = true;
+      } else if (verdict === 'APROBADO') {
+        state.qualityFormDraft.sendToReprocess = false;
+      }
+      saveState();
+      renderCurrentView();
+    }
+
+    function updateQualityObservations(val) {
+      state.qualityFormDraft.observations = val;
+      const counter = document.getElementById('quality-char-count');
+      if (counter) counter.textContent = `${val.length} / 500`;
+    }
+
+    function toggleQualityReprocess() {
+      state.qualityFormDraft.sendToReprocess = !state.qualityFormDraft.sendToReprocess;
+      saveState();
+      renderCurrentView();
+    }
+
+    function handleSaveQualityInspection() {
+      const lot = state.lots.find(l => l.code === state.selectedQualityCode) || state.lots[0];
+      const verdict = state.qualityFormDraft.verdict;
+      const obs = state.qualityFormDraft.observations.trim();
+      const reprocess = state.qualityFormDraft.sendToReprocess;
+
+      lot.qualityStatus = verdict;
+      lot.reprocess = reprocess;
+      lot.observations = obs || lot.observations;
+
+      if (verdict === 'APROBADO') {
+        lot.qualityScore = '100%';
+        lot.qualityLabel = 'Calidad Aprobada (100%)';
+        lot.stagesCompleted = 4;
+        lot.dispatchStatus = 'Pendiente de carga a contenedor';
+        lot.dispatchBadge = 'PENDIENTE';
+      } else if (verdict === 'OBSERVADO') {
+        lot.qualityScore = 'Observado';
+        lot.qualityLabel = reprocess ? 'Observado · Enviado a Reproceso' : 'Observado · En Revisión';
+        lot.stagesCompleted = 3;
+        lot.dispatchStatus = 'Bloqueado hasta nueva evaluación';
+        lot.dispatchBadge = 'BLOQUEADO';
+      } else {
+        lot.qualityScore = 'Rechazado';
+        lot.qualityLabel = 'Rechazado · No conforme';
+        lot.stagesCompleted = 3;
+        lot.dispatchStatus = 'Bloqueado automáticamente para exportación';
+        lot.dispatchBadge = 'BLOQUEADO';
+      }
+
+      if (!state.isOnline) {
+        lot.synced = false;
+        state.pendingSyncCount += 1;
+      }
+
+      state.selectedTraceCode = lot.code;
+      saveState();
+
+      showToast(
+        `Dictamen ${verdict} guardado`,
+        `El lote ${lot.code} fue actualizado (${lot.qualityLabel}).`,
+        verdict === 'APROBADO' ? 'success' : verdict === 'OBSERVADO' ? 'warning' : 'danger'
+      );
+
+      navigateTo('traceability', { lotCode: lot.code });
+    }
+
+    // =========================================================================
+    // VISTA 6: TRAZABILIDAD DE LOTE
+    // =========================================================================
+    function renderTraceabilityView() {
+      const lot = state.lots.find(l => l.code.toLowerCase() === state.selectedTraceCode.toLowerCase()) || state.lots[0];
+      const isApproved = lot.qualityStatus === 'APROBADO';
+      const isObserved = lot.qualityStatus === 'OBSERVADO';
+      const isRejected = lot.qualityStatus === 'RECHAZADO';
+
+      const qualityStageStyle = isApproved
+        ? { circle: 'bg-[#1a8a44] text-white', icon: '✓', badgeBg: 'bg-emerald-100 text-emerald-800', badgeText: lot.qualityScore }
+        : isObserved
+        ? { circle: 'bg-amber-500 text-white', icon: '!', badgeBg: 'bg-amber-100 text-amber-800', badgeText: 'OBSERVADO' }
+        : isRejected
+        ? { circle: 'bg-rose-600 text-white', icon: '✕', badgeBg: 'bg-rose-100 text-rose-800', badgeText: 'RECHAZADO' }
+        : { circle: 'bg-slate-200 text-slate-500', icon: '•', badgeBg: 'bg-slate-100 text-slate-600', badgeText: 'PENDIENTE' };
+
+      const warehouseDone = isApproved;
+
+      return `
+        <div class="view-section min-h-screen bg-agro-forest text-white flex flex-col justify-between relative overflow-hidden">
+          <!-- Círculo decorativo amarillo dorado a la derecha -->
+          <div class="w-72 h-72 sm:w-80 sm:h-80 rounded-full bg-[#f3cf55] absolute top-44 -right-24 sm:-right-14 pointer-events-none"></div>
+
+          <!-- Barra Superior -->
+          <header class="w-full max-w-6xl mx-auto px-5 sm:px-8 pt-6 pb-4 flex items-center justify-between relative z-10">
+            <div onclick="navigateTo('dashboard')" class="flex items-center gap-2.5 cursor-pointer">
+              <span class="w-8 h-8 rounded-xl bg-[#2cd45b] text-forest-950 flex items-center justify-center shadow-sm">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2.4" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M12 20V10m0 0c0-3.5 3-6 6-6 0 3.5-2.5 6-6 6zm0 3c0-3-2.5-5-5-5 0 3 2 5 5 5z" />
+                </svg>
+              </span>
+              <div class="leading-none">
+                <p class="font-display font-extrabold text-sm text-white">SIGA</p>
+                <p class="text-[9px] font-bold tracking-widest text-limeagro-400 uppercase">AGROVERDE</p>
+              </div>
+            </div>
+
+            <div class="flex items-center gap-3">
+              ${renderSystemStatusPill('dark')}
+              <span class="w-8 h-8 rounded-full bg-[#174730] border border-emerald-500/40 text-xs font-bold text-white flex items-center justify-center">
+                AV
+              </span>
+            </div>
+          </header>
+
+          <!-- Contenido Principal -->
+          <section class="w-full max-w-4xl mx-auto px-4 sm:px-6 py-4 space-y-5 relative z-10 my-auto">
+            <!-- Encabezado -->
+            <div>
+              <p class="text-[11px] font-bold uppercase tracking-widest text-[#e6c243] flex items-center gap-1.5">
+                <span>⬡</span> CONTROL DE CADENA PRODUCTIVA
+              </p>
+              <h1 class="font-display font-extrabold text-3xl sm:text-4xl text-white tracking-tight mt-1">
+                Trazabilidad de lote
+              </h1>
+              <p class="text-xs sm:text-sm text-emerald-100/80 mt-1 max-w-xl">
+                Consulta el recorrido completo del producto, desde su recepción hasta el despacho internacional.
+              </p>
+            </div>
+
+            <!-- Barra de Búsqueda Blanca Redondeada -->
+            <form onsubmit="handleTraceSearch(event)" class="bg-white rounded-2xl p-2 pl-4 shadow-xl flex flex-wrap sm:flex-nowrap items-center justify-between gap-2">
+              <div class="flex items-center gap-3 flex-1 min-w-[200px]">
+                <svg class="w-5 h-5 text-slate-400 shrink-0" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-4.35-4.35M10 18a8 8 0 100-16 8 8 0 000 16z" />
+                </svg>
+                <div class="flex-1">
+                  <label for="trace-search-input" class="block text-[9px] font-bold uppercase tracking-wider text-slate-400">
+                    CÓDIGO DE LOTE
+                  </label>
+                  <input id="trace-search-input" type="text" value="${lot.code}" list="lots-datalist"
+                    placeholder="Ej. L-004 o LOTE-2026-089"
+                    class="w-full text-sm sm:text-base font-display font-extrabold text-slate-900 focus:outline-none" />
+                  <datalist id="lots-datalist">
+                    ${state.lots.map(item => `<option value="${item.code}">${item.productFull} (${item.kg} kg)</option>`).join('')}
+                  </datalist>
+                </div>
+              </div>
+
+              <!-- Accesos rápidos a lotes existentes -->
+              <div class="hidden md:flex items-center gap-1 pr-1">
+                ${state.lots.slice(0, 3).map(item => `
+                  <button type="button" onclick="selectTraceLot('${item.code}')"
+                    class="px-2.5 py-1 rounded-lg text-[11px] font-bold transition cursor-pointer ${
+                      item.code === lot.code
+                        ? 'bg-emerald-100 text-emerald-900'
+                        : 'bg-slate-100 text-slate-600 hover:bg-slate-200'
+                    }">
+                    ${item.code}
+                  </button>
+                `).join('')}
+              </div>
+
+              <button type="submit"
+                class="px-5 py-3 rounded-xl bg-[#167c3f] hover:bg-[#126634] text-white font-bold text-xs sm:text-sm inline-flex items-center gap-2 transition cursor-pointer shrink-0">
+                <span>Buscar lote</span>
+                <span>→</span>
+              </button>
+            </form>
+
+            <!-- Tarjeta Blanca Principal FICHA DE LOTE -->
+            <div class="bg-white text-slate-900 rounded-[1.75rem] p-6 sm:p-8 card-elevated relative">
+              <!-- Cabecera de Ficha + Código QR -->
+              <div class="flex flex-wrap items-start justify-between gap-4">
+                <div>
+                  <div class="flex flex-wrap items-center gap-2.5">
+                    <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[10px] font-extrabold uppercase tracking-wider bg-[#103824] text-limeagro-400">
+                      <span class="w-1.5 h-1.5 rounded-full bg-limeagro-400"></span>
+                      FICHA DE LOTE
+                    </span>
+                    <span class="text-[11px] font-semibold text-slate-400 tracking-wide">
+                      ${lot.regCode}
+                    </span>
+                  </div>
+
+                  <div class="flex flex-wrap items-center gap-3 mt-2.5">
+                    <h2 class="font-display font-extrabold text-3xl sm:text-4xl text-slate-900 tracking-tight">
+                      Lote ${lot.code}
+                    </h2>
+                    <span class="inline-flex items-center gap-1 px-3 py-1 rounded-full text-xs font-bold bg-emerald-100 text-emerald-800">
+                      <span>🌿</span>
+                      <span>${lot.product}</span>
+                    </span>
+                  </div>
+
+                  <p class="text-xs sm:text-sm text-slate-500 font-medium mt-1">
+                    ${lot.kg} kg · Destino ${lot.destination}
+                  </p>
+                </div>
+
+                <!-- Código QR CR-01 -->
+                <div class="p-2.5 rounded-2xl border border-slate-200 bg-white text-center shadow-2xs">
+                  ${generateDeterministicQR(`SIGA-${lot.code}`, 82)}
+                  <p class="text-[9px] font-bold tracking-widest text-slate-400 uppercase mt-1">
+                    SIGA · ${lot.code}
+                  </p>
+                </div>
+              </div>
+
+              <!-- Línea de Tiempo del Proceso (5 etapas) -->
+              <div class="mt-6 pt-5 border-t border-slate-100">
+                <div class="flex items-center justify-between mb-5">
+                  <span class="text-xs font-bold text-slate-700 inline-flex items-center gap-1.5">
+                    <span class="text-emerald-600">⛓</span>
+                    Línea de tiempo del proceso
+                  </span>
+                  <span class="text-[11px] font-bold text-emerald-700">
+                    • ${lot.stagesCompleted} de 5 etapas completadas
+                  </span>
+                </div>
+
+                <div class="grid grid-cols-1 sm:grid-cols-5 gap-4 relative">
+                  <!-- Etapa 1: Recepción -->
+                  <div class="relative flex sm:flex-col items-start gap-3 sm:gap-1.5">
+                    <div class="hidden sm:block absolute top-3.5 left-7 right-0 h-0.5 bg-[#1a8a44]"></div>
+                    <span class="w-7 h-7 rounded-full bg-[#1a8a44] text-white text-xs font-bold flex items-center justify-center relative z-10 shrink-0">
+                      ✓
+                    </span>
+                    <div>
+                      <p class="font-display font-bold text-xs text-slate-900">Recepción</p>
+                      <p class="text-[11px] text-slate-500">${lot.origin}</p>
+                      <span class="inline-block mt-1.5 px-2 py-0.5 rounded-full text-[10px] font-bold bg-emerald-50 text-emerald-700">
+                        🕒 ${lot.receptionTime}
+                      </span>
+                    </div>
+                  </div>
+
+                  <!-- Etapa 2: Producción -->
+                  <div class="relative flex sm:flex-col items-start gap-3 sm:gap-1.5">
+                    <div class="hidden sm:block absolute top-3.5 left-7 right-0 h-0.5 bg-[#1a8a44]"></div>
+                    <span class="w-7 h-7 rounded-full bg-[#1a8a44] text-white text-xs font-bold flex items-center justify-center relative z-10 shrink-0">
+                      ✓
+                    </span>
+                    <div>
+                      <p class="font-display font-bold text-xs text-slate-900">Producción</p>
+                      <p class="text-[11px] text-slate-500">${lot.line}</p>
+                      <span class="inline-block mt-1.5 px-2 py-0.5 rounded-full text-[10px] font-bold bg-emerald-50 text-emerald-700">
+                        🕒 ${lot.productionTime}
+                      </span>
+                    </div>
+                  </div>
+
+                  <!-- Etapa 3: Control de Calidad -->
+                  <div class="relative flex sm:flex-col items-start gap-3 sm:gap-1.5">
+                    <div class="hidden sm:block absolute top-3.5 left-7 right-0 h-0.5 ${warehouseDone ? 'bg-[#1a8a44]' : 'bg-slate-200'}"></div>
+                    <span class="w-7 h-7 rounded-full ${qualityStageStyle.circle} text-xs font-bold flex items-center justify-center relative z-10 shrink-0">
+                      ${qualityStageStyle.icon}
+                    </span>
+                    <div>
+                      <p class="font-display font-bold text-xs text-slate-900">Control de Calidad</p>
+                      <p class="text-[11px] text-slate-500">${lot.qualityLabel}</p>
+                      <span class="inline-block mt-1.5 px-2 py-0.5 rounded-full text-[10px] font-bold ${qualityStageStyle.badgeBg}">
+                        ${qualityStageStyle.badgeText}
+                      </span>
+                    </div>
+                  </div>
+
+                  <!-- Etapa 4: Almacén -->
+                  <div class="relative flex sm:flex-col items-start gap-3 sm:gap-1.5">
+                    <div class="hidden sm:block absolute top-3.5 left-7 right-0 h-0.5 bg-slate-200"></div>
+                    <span class="w-7 h-7 rounded-full ${
+                      warehouseDone ? 'bg-[#1a8a44] text-white' : 'bg-slate-100 border-2 border-slate-300 text-slate-400'
+                    } text-xs font-bold flex items-center justify-center relative z-10 shrink-0">
+                      ${warehouseDone ? '✓' : '•'}
+                    </span>
+                    <div>
+                      <p class="font-display font-bold text-xs ${warehouseDone ? 'text-slate-900' : 'text-slate-400'}">Almacén</p>
+                      <p class="text-[11px] ${warehouseDone ? 'text-slate-500' : 'text-slate-400'}">
+                        ${warehouseDone ? lot.chamber : 'En espera de aprobación'}
+                      </p>
+                    </div>
+                  </div>
+
+                  <!-- Etapa 5: Despacho -->
+                  <div class="relative flex sm:flex-col items-start gap-3 sm:gap-1.5">
+                    <span class="w-7 h-7 rounded-full bg-slate-100 border-2 border-slate-300 text-slate-400 text-xs font-bold flex items-center justify-center relative z-10 shrink-0">
+                      •
+                    </span>
+                    <div>
+                      <p class="font-display font-bold text-xs text-slate-400">Despacho</p>
+                      <p class="text-[11px] text-slate-400 leading-snug">${lot.dispatchStatus}</p>
+                      <span class="inline-block mt-1.5 px-2.5 py-0.5 rounded-md text-[10px] font-bold uppercase tracking-wide ${
+                        lot.dispatchBadge === 'BLOQUEADO'
+                          ? 'bg-rose-100 text-rose-700'
+                          : 'bg-slate-100 text-slate-500'
+                      }">
+                        ${lot.dispatchBadge}
+                      </span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- 3 Columnas Inferiores de Metadatos -->
+              <div class="mt-6 pt-5 border-t border-slate-100 grid grid-cols-1 sm:grid-cols-3 gap-4 pr-16">
+                <div class="flex items-center gap-3">
+                  <span class="w-9 h-9 rounded-xl bg-emerald-50 text-emerald-700 flex items-center justify-center shrink-0">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
+                      <path stroke-linecap="round" stroke-linejoin="round" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
+                    </svg>
+                  </span>
+                  <div>
+                    <p class="text-[10px] font-bold uppercase tracking-wider text-slate-400">ORIGEN</p>
+                    <p class="font-display font-bold text-xs sm:text-sm text-slate-900">${lot.originLocation}</p>
+                  </div>
+                </div>
+
+                <div class="flex items-center gap-3">
+                  <span class="w-9 h-9 rounded-xl bg-emerald-50 text-emerald-700 flex items-center justify-center shrink-0">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" d="M12 3v18m0-18l-3 3m3-3l3 3m-3 15l-3-3m3 3l3-3M3 12h18" />
+                    </svg>
+                  </span>
+                  <div>
+                    <p class="text-[10px] font-bold uppercase tracking-wider text-slate-400">CADENA DE FRÍO</p>
+                    <p class="font-display font-bold text-xs sm:text-sm text-slate-900">${lot.coldChain}</p>
+                  </div>
+                </div>
+
+                <div class="flex items-center gap-3">
+                  <span class="w-9 h-9 rounded-xl bg-emerald-50 text-emerald-700 flex items-center justify-center shrink-0">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                    </svg>
+                  </span>
+                  <div>
+                    <p class="text-[10px] font-bold uppercase tracking-wider text-slate-400">FECHA DE PROCESO</p>
+                    <p class="font-display font-bold text-xs sm:text-sm text-slate-900">${lot.receptionDate}</p>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Sello circular azul-violeta flotante abajo a la derecha: TRAZABILIDAD 100% -->
+              <div class="w-20 h-20 rounded-full bg-[#4847a8] text-white shadow-xl flex flex-col items-center justify-center text-center leading-tight absolute -bottom-4 -right-3 sm:-right-5 rotate-6 border-4 border-white/20">
+                <span class="text-xs font-extrabold">✓</span>
+                <span class="text-[8px] font-bold tracking-wider uppercase mt-0.5">TRAZABILIDAD</span>
+                <span class="font-display font-black text-sm">100%</span>
+              </div>
+            </div>
+
+            <!-- Pie de página oscuro -->
+            <div class="pt-1 flex flex-wrap items-center justify-between gap-2 text-xs text-emerald-200/75">
+              <div class="inline-flex items-center gap-2">
+                <span class="w-4 h-4 rounded-full border border-emerald-400/50 flex items-center justify-center text-[10px] text-limeagro-400">✓</span>
+                <span>Información sincronizada con SIGA · Última actualización hoy, ${state.lastSyncTime}</span>
+              </div>
+
+              <button onclick="navigateTo('quality', { lotCode: '${lot.code}' })"
+                class="text-limeagro-400 hover:underline font-bold cursor-pointer">
+                Evaluar este lote en Calidad →
+              </button>
+            </div>
+          </section>
+
+          <div class="h-4"></div>
+        </div>
+      `;
+    }
+
+    function selectTraceLot(code) {
+      state.selectedTraceCode = code;
+      saveState();
+      renderCurrentView();
+    }
+
+    function handleTraceSearch(e) {
+      e.preventDefault();
+      const query = document.getElementById('trace-search-input').value.trim();
+      if (!query) return;
+
+      const found = state.lots.find(
+        l => l.code.toLowerCase() === query.toLowerCase() || l.code.toLowerCase().includes(query.toLowerCase())
+      );
+
+      if (found) {
+        state.selectedTraceCode = found.code;
+        saveState();
+        renderCurrentView();
+        showToast(`Ficha encontrada: ${found.code}`, `${found.productFull} (${found.kg} kg) · ${found.qualityLabel}.`, 'success');
+      } else {
+        showToast(
+          'Código de lote no encontrado',
+          `No existe el código "${query}". Prueba con L-004, LOTE-2026-088 o registra uno nuevo.`,
+          'warning'
+        );
+      }
+    }
+
+    // =========================================================================
+    // RENDERIZADOR PRINCIPAL
+    // =========================================================================
+    function renderCurrentView() {
+      const container = document.getElementById('view-container');
+      switch (state.currentView) {
+        case 'login':
+          container.innerHTML = renderLoginView();
+          break;
+        case 'dashboard':
+          container.innerHTML = renderDashboardView();
+          break;
+        case 'register':
+          container.innerHTML = renderRegisterLotView();
+          break;
+        case 'quality':
+          container.innerHTML = renderQualityView();
+          break;
+        case 'traceability':
+          container.innerHTML = renderTraceabilityView();
+          break;
+        case 'landing':
+        default:
+          container.innerHTML = renderLandingView();
+          break;
+      }
+      updateNavPills();
+    }
+
+    // Cerrar menú desplegable de usuario al hacer clic fuera
+    document.addEventListener('click', (e) => {
+      const dd = document.getElementById('user-dropdown');
+      if (dd && !dd.classList.contains('hidden') && !e.target.closest('#user-dropdown') && !e.target.closest('button[onclick="toggleUserDropdown()"]')) {
+        dd.classList.add('hidden');
+      }
+    });
+
+    // Inicializar aplicación al cargar
+    window.addEventListener('DOMContentLoaded', () => {
+      renderCurrentView();
+    });
+  </script>
+</body>
+</html>
